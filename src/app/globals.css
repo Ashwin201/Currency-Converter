@@ -25,3 +25,38 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+.custom-shape-divider-top-1739206564 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.custom-shape-divider-top-1739206564 svg {
+  position: relative;
+  display: block;
+  width: calc(137% + 1.3px);
+  height: 500px;
+}
+
+.custom-shape-divider-top-1739206564 .shape-fill {
+  fill: #000000;
+}
+
+/** For tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+  .custom-shape-divider-top-1739206564 svg {
+    width: calc(180% + 1.3px);
+    height: 500px;
+  }
+}
+
+/** For mobile devices **/
+@media (max-width: 767px) {
+  .custom-shape-divider-top-1739206564 svg {
+    width: calc(124% + 1.3px);
+    height: 470px;
+  }
+}

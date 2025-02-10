@@ -1,113 +1,144 @@
-import Image from 'next/image'
+"use client";
+
+import { useState, useEffect } from "react";
+import Select from "react-select";
+
+const API_URL = `https://v6.exchangerate-api.com/v6/${process.env.NEXT_PUBLIC_EXCHANGE_RATE_API_KEY}/latest/USD`;
 
 export default function Home() {
+  const [currencies, setCurrencies] = useState({});
+  const [amount, setAmount] = useState(null);
+  const [from, setFrom] = useState("Search...");
+  const [to, setTo] = useState("Search...");
+  const [converted, setConverted] = useState(null);
+  const [error, setError] = useState(null);
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        setCurrencies(data?.conversion_rates);
+      } catch (err) {
+        console.error("Error fetching rates:", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const convertCurrency = () => {
+    if (Number(amount) === null || amount === 0) {
+      setError("Please enter any amount.");
+      setConverted(null);
+    } else {
+      setError(null);
+    }
+    if (!currencies[from] || !currencies[to]) return;
+    const rate = currencies[to] / currencies[from];
+    setConverted(Number(amount) * rate);
+    setShow(true);
+  };
+
+  const handleCurrencyChange = (e) => {
+    setFrom(e.target.value);
+    setShow(false);
+  };
+
+  // Update the handleCurrencyChange for 'to' currency
+  const handleToCurrencyChange = (e) => {
+    setTo(e.target.value);
+    setShow(fasle);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-blue-50  text-white relative px-4">
+      <div className=" z-20 bg-gradient-to-b from-gray-50 to-blue-50 p-6 rounded-lg shadow-lg w-96">
+        <h2 className="text-xl font-bold mb-6 text-center text-black">
+          Currency Converter
+        </h2>
+        <div className="flex flex-col gap-4">
+          {/* Amount Input */}
+          <label className="text-sm font-medium text-black">
+            Enter Your Amount :
+          </label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => {
+              setAmount(e.target.value);
+              setShow(false);
+            }}
+            className="p-2 border rounded placeholder:text-gray-800  w-full bg-gray-50 text-black"
+            placeholder="Enter amount"
+          />
+
+          {/* From Currency */}
+          <label className="text-sm font-medium text-black">
+            From Currency
+          </label>
+          <Select
+            value={{ value: from, label: from }}
+            onChange={(option) => {
+              setFrom(option.value);
+              setShow(false);
+            }}
+            options={Object.keys(currencies).map((currency) => ({
+              value: currency,
+              label: currency,
+            }))}
+            className="basic-single text-black  "
+            classNamePrefix="select"
+          />
+
+          {/* To Currency */}
+          <label className="text-sm font-medium text-black">To Currency</label>
+          <Select
+            value={{ value: to, label: to }}
+            onChange={(option) => {
+              setTo(option.value);
+              setShow(false);
+            }}
+            options={Object.keys(currencies).map((currency) => ({
+              value: currency,
+              label: currency,
+            }))}
+            className="basic-single  text-black"
+            classNamePrefix="select"
+          />
+          {/* Convert Button */}
+          <button
+            onClick={convertCurrency}
+            className="bg-gray-950 text-white p-2 rounded w-full hover:bg-gray-900"
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            Convert
+          </button>
+
+          {/* Converted Value */}
+          {show && (
+            <p className="text-center font-semibold text-lg mt-4 text-black">
+              {amount} {from} = {converted.toFixed(2)} {to}
+            </p>
+          )}
+          {error && (
+            <p className="text-center font-semibold text-sm  text-red-500">
+              Please enter some amount.
+            </p>
+          )}
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div className="custom-shape-divider-top-1739206564">
+        <svg
+          dataName="Layer 1"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,0V6c0,21.6,291,111.46,741,110.26,445.39,3.6,459-88.3,459-110.26V0Z"
+            className="shape-fill"
+          ></path>
+        </svg>
       </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    </div>
+  );
 }
