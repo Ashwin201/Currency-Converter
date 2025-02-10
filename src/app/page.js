@@ -27,7 +27,7 @@ export default function Home() {
   }, []);
 
   const convertCurrency = () => {
-    if (Number(amount) === null || amount === 0) {
+    if (amount === null || Number(amount) === 0) {
       setError("Please enter any amount.");
       setConverted(null);
     } else {
@@ -39,20 +39,9 @@ export default function Home() {
     setShow(true);
   };
 
-  const handleCurrencyChange = (e) => {
-    setFrom(e.target.value);
-    setShow(false);
-  };
-
-  // Update the handleCurrencyChange for 'to' currency
-  const handleToCurrencyChange = (e) => {
-    setTo(e.target.value);
-    setShow(fasle);
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-blue-50  text-white relative px-4">
-      <div className=" z-20 bg-gradient-to-b from-gray-50 to-blue-50 p-6 rounded-lg shadow-lg w-96">
+    <div className="min-h-screen overflow-y-hidden flex items-center justify-center bg-gray-50  text-white relative px-4">
+      <div className=" z-20 bg-gradient-to-b bg-gray-50 p-6 rounded-lg shadow-lg w-96 mb-8">
         <h2 className="text-xl font-bold mb-6 text-center text-black">
           Currency Converter
         </h2>
@@ -114,14 +103,14 @@ export default function Home() {
           </button>
 
           {/* Converted Value */}
-          {show && (
-            <p className="text-center font-semibold text-lg mt-4 text-black">
+          {show && Number(amount) > 0 && (
+            <p className="text-center font-semibold text-lg mt-2 text-black">
               {amount} {from} = {converted.toFixed(2)} {to}
             </p>
           )}
           {error && (
             <p className="text-center font-semibold text-sm  text-red-500">
-              Please enter some amount.
+              {error}
             </p>
           )}
         </div>
