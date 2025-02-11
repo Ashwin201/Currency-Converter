@@ -18,6 +18,7 @@ export default function Home() {
       try {
         const res = await fetch(API_URL);
         const data = await res.json();
+        console.log(data);
         setCurrencies(data?.conversion_rates);
       } catch (err) {
         console.error("Error fetching rates:", err);
@@ -40,7 +41,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen overflow-y-hidden flex items-center justify-center bg-gray-50  text-white relative px-4">
+    <div className=" h-screen overflow-y-hidden flex items-center justify-center bg-gray-50  text-white relative px-4">
       <div className=" z-20 bg-gradient-to-b bg-gray-50 p-6 rounded-lg shadow-lg w-96 mb-8">
         <h2 className="text-xl font-bold mb-6 text-center text-black">
           Currency Converter
